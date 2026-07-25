@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Sandbox off: Accessibility selected-text APIs require a non-sandboxed process. -->
+	<!-- Hardened Runtime stays enabled in Xcode build settings. -->
+	<!-- TCC trust persists across updates when Bundle ID + Team ID are unchanged. -->
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+</dict>
+</plist>

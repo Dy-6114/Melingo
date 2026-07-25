@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSServices</key>
+	<array>
+		<dict>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Add Card to Melingo</string>
+				<key>ru</key>
+				<string>Добавить карточку в Melingo</string>
+				<key>zh_CN</key>
+				<string>添加到 Melingo 卡片</string>
+				<key>ja</key>
+				<string>Melingo カードに追加</string>
+				<key>ko</key>
+				<string>Melingo 카드에 추가</string>
+			</dict>
+			<!-- Method name without trailing colon; matches MelingoServicesProvider.addToMelingoCard(_:userData:error:) -->
+			<key>NSMessage</key>
+			<string>addToMelingoCard</string>
+			<key>NSPortName</key>
+			<string>Melingo</string>
+			<key>NSSendTypes</key>
+			<array>
+				<string>public.utf8-plain-text</string>
+				<string>public.plain-text</string>
+				<string>public.utf16-plain-text</string>
+				<string>NSStringPboardType</string>
+			</array>
+			<!-- No NSRequiredContext: Text/FilePath filters hide the item in many apps (Safari, Chrome, PDF). -->
+		</dict>
+	</array>
+</dict>
+</plist>

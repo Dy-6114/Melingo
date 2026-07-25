@@ -1,0 +1,342 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B100000000000000000000E1 /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F1 /* Domain */; };
+		B100000000000000000000E2 /* DataKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F2 /* DataKit */; };
+		B100000000000000000000E3 /* ContentImportKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F3 /* ContentImportKit */; };
+		B100000000000000000000E4 /* AIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F4 /* AIKit */; };
+		B100000000000000000000E5 /* MLXAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F5 /* MLXAdapter */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B100000000000000000000B4 /* Melingo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melingo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B100000000000000000000B1 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B100000000000000000000B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B100000000000000000000E1 /* Domain in Frameworks */,
+				B100000000000000000000E2 /* DataKit in Frameworks */,
+				B100000000000000000000E3 /* ContentImportKit in Frameworks */,
+				B100000000000000000000E4 /* AIKit in Frameworks */,
+				B100000000000000000000E5 /* MLXAdapter in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B100000000000000000000B2 = {
+			isa = PBXGroup;
+			children = (
+				B100000000000000000000B1 /* App */,
+				B100000000000000000000B3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B100000000000000000000B3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B100000000000000000000B4 /* Melingo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B100000000000000000000B5 /* MelingoMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B100000000000000000000C4 /* Build configuration list for PBXNativeTarget "MelingoMac" */;
+			buildPhases = (
+				B100000000000000000000B7 /* Sources */,
+				B100000000000000000000B8 /* Frameworks */,
+				B100000000000000000000B9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B100000000000000000000B1 /* App */,
+			);
+			name = MelingoMac;
+			packageProductDependencies = (
+				B100000000000000000000F1 /* Domain */,
+				B100000000000000000000F2 /* DataKit */,
+				B100000000000000000000F3 /* ContentImportKit */,
+				B100000000000000000000F4 /* AIKit */,
+				B100000000000000000000F5 /* MLXAdapter */,
+			);
+			productName = Melingo;
+			productReference = B100000000000000000000B4 /* Melingo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B100000000000000000000B6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					B100000000000000000000B5 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = B100000000000000000000C1 /* Build configuration list for PBXProject "MelingoMac" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B100000000000000000000B2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B100000000000000000000D1 /* XCLocalSwiftPackageReference "Packages/Domain" */,
+				B100000000000000000000D2 /* XCLocalSwiftPackageReference "Packages/DataKit" */,
+				B100000000000000000000D3 /* XCLocalSwiftPackageReference "Packages/ContentImportKit" */,
+				B100000000000000000000D4 /* XCLocalSwiftPackageReference "Packages/AIKit" */,
+				B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B100000000000000000000B3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B100000000000000000000B5 /* MelingoMac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B100000000000000000000B9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B100000000000000000000B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B100000000000000000000C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B100000000000000000000C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B100000000000000000000C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/MelingoMac.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info-Services.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Melingo;
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_NSAccessibilityUsageDescription = "Melingo needs Accessibility to read the word you select in your browser during Reading Mode.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Apache 2.0";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Melingo uses the microphone to record your pronunciation for vocabulary cards.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.melingo.mac;
+				PRODUCT_NAME = Melingo;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		B100000000000000000000C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/MelingoMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info-Services.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Melingo;
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_NSAccessibilityUsageDescription = "Melingo needs Accessibility to read the word you select in your browser during Reading Mode.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Apache 2.0";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Melingo uses the microphone to record your pronunciation for vocabulary cards.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.melingo.mac;
+				PRODUCT_NAME = Melingo;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B100000000000000000000C1 /* Build configuration list for PBXProject "MelingoMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B100000000000000000000C2 /* Debug */,
+				B100000000000000000000C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B100000000000000000000C4 /* Build configuration list for PBXNativeTarget "MelingoMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B100000000000000000000C5 /* Debug */,
+				B100000000000000000000C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B100000000000000000000D1 /* XCLocalSwiftPackageReference "Packages/Domain" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Domain;
+		};
+		B100000000000000000000D2 /* XCLocalSwiftPackageReference "Packages/DataKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DataKit;
+		};
+		B100000000000000000000D3 /* XCLocalSwiftPackageReference "Packages/ContentImportKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/ContentImportKit;
+		};
+		B100000000000000000000D4 /* XCLocalSwiftPackageReference "Packages/AIKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/AIKit;
+		};
+		B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MLXAdapter;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B100000000000000000000F1 /* Domain */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D1 /* XCLocalSwiftPackageReference "Packages/Domain" */;
+			productName = Domain;
+		};
+		B100000000000000000000F2 /* DataKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D2 /* XCLocalSwiftPackageReference "Packages/DataKit" */;
+			productName = DataKit;
+		};
+		B100000000000000000000F3 /* ContentImportKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D3 /* XCLocalSwiftPackageReference "Packages/ContentImportKit" */;
+			productName = ContentImportKit;
+		};
+		B100000000000000000000F4 /* AIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D4 /* XCLocalSwiftPackageReference "Packages/AIKit" */;
+			productName = AIKit;
+		};
+		B100000000000000000000F5 /* MLXAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */;
+			productName = MLXAdapter;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B100000000000000000000B6 /* Project object */;
+}

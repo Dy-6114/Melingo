@@ -1,0 +1,241 @@
+{
+  "fill" : {
+    "automatic-gradient" : "srgb:0.00000,0.00000,0.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "blur-material" : 0.4,
+      "layers" : [
+        {
+          "glass" : true,
+          "hidden" : false,
+          "image-name" : "Ресурс 18.svg",
+          "name" : "Ресурс 18",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -138.41692870213592,
+              283.21310960860797
+            ]
+          }
+        },
+        {
+          "glass" : false,
+          "image-name" : "Ресурс 9.svg",
+          "name" : "Ресурс 9",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -302.1484375,
+              300.9199055884825
+            ]
+          }
+        },
+        {
+          "glass" : true,
+          "image-name" : "Ресурс 10.svg",
+          "name" : "Ресурс 10",
+          "opacity" : 1,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -1,
+              253.39655000993116
+            ]
+          }
+        },
+        {
+          "hidden" : false,
+          "image-name" : "Ресурс 21.svg",
+          "name" : "Ресурс 21",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -325.89232918477774,
+              -171.36
+            ]
+          }
+        },
+        {
+          "image-name" : "Ресурс 21.svg",
+          "name" : "Ресурс 21",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -325.89232918477774,
+              -284.7586497467921
+            ]
+          }
+        }
+      ],
+      "opacity" : 0.7,
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.6
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "hidden" : false,
+          "image-name" : "Ресурс 20.svg",
+          "name" : "Ресурс 20",
+          "opacity" : 0.4
+        },
+        {
+          "blend-mode" : "plus-darker",
+          "fill" : {
+            "solid" : "srgb:0.00000,0.00000,0.00000,1.00000"
+          },
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "Ресурс 12.svg",
+          "name" : "Ресурс 12",
+          "opacity" : 0.75,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -1,
+              -321.28000000000003
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "srgb:1.00000,1.00000,1.00000,1.00000",
+              "display-p3:0.91917,0.78529,0.86630,1.00000"
+            ],
+            "orientation" : {
+              "start" : {
+                "x" : 0.5,
+                "y" : 0
+              },
+              "stop" : {
+                "x" : 0.5,
+                "y" : 0.7
+              }
+            }
+          },
+          "glass" : false,
+          "hidden" : true,
+          "image-name" : "Ресурс 8.svg",
+          "name" : "Ресурс 8",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -125.13058845601813,
+              -0.985133073023519
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "display-p3:1.00000,0.83738,0.92108,1.00000",
+              "srgb:1.00000,1.00000,1.00000,1.00000"
+            ],
+            "orientation" : {
+              "start" : {
+                "x" : 0.49999999999999967,
+                "y" : 0.7756453184357671
+              },
+              "stop" : {
+                "x" : 0.16709139057723066,
+                "y" : 0.09482794341510034
+              }
+            }
+          },
+          "hidden" : false,
+          "image-name" : "Ресурс 13.svg",
+          "name" : "Ресурс 13",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -125.05599269786921,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "blur-material" : 0.1,
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "display-p3:0.99183,0.81041,0.88370,1.00000"
+          },
+          "glass" : true,
+          "image-name" : "Ресурс 14.svg",
+          "name" : "Ресурс 14",
+          "opacity" : 0.75,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              47.180000000000064,
+              3.3413502532079065
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.8
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "display-p3:0.96921,0.18056,0.70420,1.00000"
+          },
+          "image-name" : "Ресурс 15.svg",
+          "name" : "Ресурс 15",
+          "opacity" : 0.6,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              209.4609375,
+              3.3413502532079065
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.8
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

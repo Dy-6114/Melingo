@@ -1,0 +1,12 @@
+.build/
+Packages/Domain/.build/
+Packages/DataKit/.build/
+Packages/SharedTestSupport/.build/
+Packages/ContentImportKit/.build/
+Packages/AIKit/.build/
+dist/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+.DS_Store
+graphify-out/
