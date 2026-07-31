@@ -303,6 +303,44 @@ final class AppLibraryStore {
         }
     }
 
+    /// Persist a Telegram channel export as a library article (JSON/media stay under TelegramPaths).
+    /// Optional `coverPNG` becomes the Articles card thumbnail (channel avatar).
+    func saveTelegramChannel(
+        document: Document,
+        segments: [TextSegment],
+        coverPNG: Data? = nil
+    ) async throws {
+        if let coverPNG, !coverPNG.isEmpty {
+            _ = try? stack.store.fileStore.storePagePreviews(
+                [(pageIndex: 0, pngData: coverPNG)],
+                documentID: document.id
+            )
+        }
+        try await stack.library.save(document: document, segments: segments)
+        await load()
+        lastError = nil
+    }
+
+    /// Persist YouTube video metadata (cues JSON) + transcript segments.
+    func saveYouTubeVideo(
+        document: inout Document,
+        segments: [TextSegment],
+        payloadData: Data
+    ) async throws {
+        document.storedFileRelativePath = try stack.store.fileStore.store(
+            data: payloadData,
+            documentID: document.id,
+            fileExtension: "youtube.json"
+        )
+        try await stack.library.save(document: document, segments: segments)
+        await load()
+        lastError = nil
+    }
+
+    func readDocumentFile(relativePath: String) throws -> Data {
+        try stack.store.fileStore.read(relativePath: relativePath)
+    }
+
     func pagePreviewURL(for documentID: Document.ID, pageIndex: Int = 0) -> URL? {
         stack.store.fileStore.pagePreviewURL(documentID: documentID, pageIndex: pageIndex)
     }
@@ -399,11 +437,9 @@ final class AppLibraryStore {
             // invent nonsense on short social-media text. Fall back to the model only
             // when engines fail and the segment is multi-word.
             let text: String
-            if let gloss = try? await TranslationService().translate(
-                trimmed, from: pair.source, to: pair.target
-            ) {
+            if let gloss = try? await TranslationService().translateFlexible(trimmed, pair: pair) {
                 let g = gloss.trimmingCharacters(in: .whitespacesAndNewlines)
-                if !g.isEmpty {
+                if !g.isEmpty, TranslationService.isUsefulGloss(g, of: trimmed) {
                     text = g
                 } else if LexemeRouter.isSingleWord(trimmed) {
                     lastError = AppL10n.t("lookup.limited")

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// Single source of truth for main-window navigation (avoids god RootView).
 @MainActor
@@ -13,6 +14,9 @@ final class WorkspaceRouter {
             }
         }
     }
+
+    /// Controls the app `NavigationSplitView` sidebar (collapsed for immersive readers).
+    var columnVisibility: NavigationSplitViewVisibility = .all
 
     let history = WorkspaceNavigationHistory()
 
@@ -53,5 +57,13 @@ final class WorkspaceRouter {
 
     func openSmart(_ filter: SmartFilter) {
         navigate(to: .smart(filter))
+    }
+
+    func collapseSidebar() {
+        columnVisibility = .detailOnly
+    }
+
+    func expandSidebar() {
+        columnVisibility = .all
     }
 }

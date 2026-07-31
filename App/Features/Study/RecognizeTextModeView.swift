@@ -207,9 +207,9 @@ struct RecognizeTextModeView: View {
     private func loadHint(_ word: OCRWord) async {
         hint = nil
         let pair = store.profile.preferredLanguagePair
-        // Single word: Apple Translation only — never LLM.
-        if let tr = try? await translator.translate(word.text, from: pair.source, to: pair.target) {
-            hint = tr
+        // Single word: engines only — never LLM. Accept either language direction.
+        if let resolved = await translator.resolveStudyLookup(word.text, pair: pair) {
+            hint = resolved.gloss
             return
         }
         if let defs = try? await WiktionaryRESTClient.definitions(for: word.text),
@@ -221,9 +221,12 @@ struct RecognizeTextModeView: View {
     }
 
     private func addCard(_ word: OCRWord) async {
-        let meaning = hint ?? "—"
+        let pair = store.profile.preferredLanguagePair
+        let resolved = await translator.resolveStudyLookup(word.text, pair: pair)
+        let study = resolved?.cardWord ?? word.text
+        let meaning = resolved?.cardMeaning ?? hint ?? "—"
         let ok = await store.createManualCard(
-            word: word.text,
+            word: study,
             meaning: meaning,
             context: nil,
             reading: nil,

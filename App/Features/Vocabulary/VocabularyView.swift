@@ -437,14 +437,16 @@ struct QuickAddWordSheet: View {
         isTranslating = true
         defer { isTranslating = false }
         let pair = store.profile.preferredLanguagePair
-        do {
-            meaning = try await translator.translate(
-                trimmed,
-                from: pair.source,
-                to: pair.target
-            )
-            note = "Translated with Apple Translation"
-        } catch {
+        if let resolved = await translator.resolveStudyLookup(trimmed, pair: pair) {
+            if resolved.inputWasNative {
+                word = resolved.cardWord
+                meaning = resolved.cardMeaning
+                note = "Translated from native → study"
+            } else {
+                meaning = resolved.gloss
+                note = "Translated with Apple Translation"
+            }
+        } else {
             note = "Add a meaning manually — translation unavailable."
         }
     }

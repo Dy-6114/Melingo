@@ -8,6 +8,8 @@ public enum DocumentSourceKind: String, Codable, Sendable, CaseIterable {
     case epub
     case docx
     case imageOCR
+    case telegram
+    case youtube
 }
 
 /// Imported reading material. Framework-free value type (TZ §6.1).

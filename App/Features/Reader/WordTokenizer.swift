@@ -69,7 +69,51 @@ enum WordTokenizer {
                 ))
             }
         }
-        return result
+        return expandNewlines(result, segmentID: segmentID)
+    }
+
+    /// Split gap tokens on `\n` so layout can break lines (WordChipProseView is single-line otherwise).
+    private static func expandNewlines(_ tokens: [WordToken], segmentID: UUID) -> [WordToken] {
+        var out: [WordToken] = []
+        out.reserveCapacity(tokens.count)
+        var index = 0
+        for token in tokens {
+            if token.isWord || !token.text.contains(where: \.isNewline) {
+                out.append(WordToken(
+                    text: token.text,
+                    range: token.range,
+                    isWord: token.isWord,
+                    segmentID: segmentID,
+                    index: index
+                ))
+                index += 1
+                continue
+            }
+            let parts = token.text.split(separator: "\n", omittingEmptySubsequences: false)
+            for (partIndex, part) in parts.enumerated() {
+                if partIndex > 0 {
+                    out.append(WordToken(
+                        text: "\n",
+                        range: token.range,
+                        isWord: false,
+                        segmentID: segmentID,
+                        index: index
+                    ))
+                    index += 1
+                }
+                if !part.isEmpty {
+                    out.append(WordToken(
+                        text: String(part),
+                        range: token.range,
+                        isWord: false,
+                        segmentID: segmentID,
+                        index: index
+                    ))
+                    index += 1
+                }
+            }
+        }
+        return out
     }
 
     private static func isLexical(_ token: String) -> Bool {

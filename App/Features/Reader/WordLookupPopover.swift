@@ -12,6 +12,10 @@ struct WordLookupPopover: View {
     var canSpeak: Bool = true
 
     @State private var translation: String?
+    /// Study-language form used for cards / dictionary (may differ from `word` when the click was native text).
+    @State private var cardWord: String?
+    @State private var cardMeaning: String?
+    @State private var speakLanguage: String?
     @State private var transcription: String?
     @State private var partOfSpeech: String?
     @State private var definition: String?
@@ -60,7 +64,7 @@ struct WordLookupPopover: View {
                     speech.speak(
                         word,
                         reading: transcription,
-                        language: store.profile.preferredLanguagePair.source
+                        language: speakLanguage ?? store.profile.preferredLanguagePair.source
                     )
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
@@ -285,6 +289,9 @@ struct WordLookupPopover: View {
         isLoadingImage = true
         loadNote = nil
         translation = nil
+        cardWord = nil
+        cardMeaning = nil
+        speakLanguage = nil
         transcription = nil
         partOfSpeech = nil
         definition = nil
@@ -304,26 +311,40 @@ struct WordLookupPopover: View {
             if isTranslating { isTranslating = false }
         }
 
-        async let translationTask: String? = {
-            try? await translator.translate(word, from: pair.source, to: pair.target)
-        }()
+        // Prefer content→native; if the gloss is identical (clicked native text in a bilingual post),
+        // fall back to native→study — shared with New Card / OCR / reading mode.
+        let resolved = await translator.resolveStudyLookup(word, pair: pair)
+        if let resolved {
+            translation = resolved.gloss
+            cardWord = resolved.cardWord
+            cardMeaning = resolved.cardMeaning
+            speakLanguage = resolved.speakLanguage
+            isAdded = store.vocabulary.contains {
+                $0.word.localizedCaseInsensitiveCompare(resolved.cardWord) == .orderedSame
+            }
+        }
+        isTranslating = false
+
+        let dictTerm = resolved?.cardWord ?? word
+        let dictHint = pair.source
+
         async let defsTask: [WiktionaryDefinition] = {
             (try? await WiktionaryRESTClient.definitions(
-                for: word,
-                languageHint: pair.source
+                for: dictTerm,
+                languageHint: dictHint
             )) ?? []
         }()
         async let ipaTask: [String] = {
             (try? await WiktionaryMediaWikiClient.ipaReadings(
-                for: word,
-                languageHint: pair.source
+                for: dictTerm,
+                languageHint: dictHint
             )) ?? []
         }()
         async let commonsTask: URL? = {
             // Prefer sense from content language so FR «pour» ≠ EN “pour (liquid)”.
-            let query = pair.source.lowercased().hasPrefix("en")
-                ? word
-                : "\(word) (\(pair.source))"
+            let query = dictHint.lowercased().hasPrefix("en")
+                ? dictTerm
+                : "\(dictTerm) (\(dictHint))"
             let images = (try? await WikimediaCommonsClient.searchImages(query: query, limit: 1)) ?? []
             return images.first?.thumbURL ?? images.first?.fullURL
         }()
@@ -347,9 +368,6 @@ struct WordLookupPopover: View {
 
         commonsThumb = await commonsTask
         isLoadingImage = false
-
-        translation = await translationTask
-        isTranslating = false
 
         if translation != nil || definition != nil || transcription != nil {
             loadNote = nil
@@ -392,9 +410,7 @@ struct WordLookupPopover: View {
         else { return }
         let pair = store.profile.preferredLanguagePair
         do {
-            exampleTranslation = try await translator.translate(
-                exampleSource, from: pair.source, to: pair.target
-            )
+            exampleTranslation = try await translator.translateFlexible(exampleSource, pair: pair)
         } catch {
             // Keep the source example visible even if gloss fails — never crash the popover.
             exampleTranslation = nil
@@ -426,9 +442,10 @@ struct WordLookupPopover: View {
         guard !isAdded else { return }
         isSaving = true
         defer { isSaving = false }
-        let meaning = translation ?? definition ?? "—"
+        let study = cardWord ?? word
+        let meaning = cardMeaning ?? translation ?? definition ?? "—"
         let ok = await store.createManualCard(
-            word: word,
+            word: study,
             meaning: meaning,
             context: showExample ? exampleSource : segment.text,
             reading: transcription,

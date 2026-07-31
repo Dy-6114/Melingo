@@ -12,16 +12,24 @@
 		B100000000000000000000E3 /* ContentImportKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F3 /* ContentImportKit */; };
 		B100000000000000000000E4 /* AIKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F4 /* AIKit */; };
 		B100000000000000000000E5 /* MLXAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F5 /* MLXAdapter */; };
+		B100000000000000000000E6 /* TelegramKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F6 /* TelegramKit */; };
+		B100000000000000000000E7 /* TelegramKit in Frameworks */ = {isa = PBXBuildFile; productRef = B100000000000000000000F7 /* TelegramKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B100000000000000000000B4 /* Melingo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Melingo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B100000000000000000000B11 /* Telegram Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Telegram Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B100000000000000000000B1 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = App;
+			sourceTree = "<group>";
+		};
+		B100000000000000000000B10 /* TelegramViewer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TelegramViewer;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -36,6 +44,15 @@
 				B100000000000000000000E3 /* ContentImportKit in Frameworks */,
 				B100000000000000000000E4 /* AIKit in Frameworks */,
 				B100000000000000000000E5 /* MLXAdapter in Frameworks */,
+				B100000000000000000000E6 /* TelegramKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B100000000000000000000B13 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B100000000000000000000E7 /* TelegramKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				B100000000000000000000B1 /* App */,
+				B100000000000000000000B10 /* TelegramViewer */,
 				B100000000000000000000B3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				B100000000000000000000B4 /* Melingo.app */,
+				B100000000000000000000B11 /* Telegram Viewer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,9 +102,33 @@
 				B100000000000000000000F3 /* ContentImportKit */,
 				B100000000000000000000F4 /* AIKit */,
 				B100000000000000000000F5 /* MLXAdapter */,
+				B100000000000000000000F6 /* TelegramKit */,
 			);
 			productName = Melingo;
 			productReference = B100000000000000000000B4 /* Melingo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B100000000000000000000B12 /* TelegramViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B100000000000000000000C9 /* Build configuration list for PBXNativeTarget "TelegramViewer" */;
+			buildPhases = (
+				B100000000000000000000B14 /* Sources */,
+				B100000000000000000000B13 /* Frameworks */,
+				B100000000000000000000B15 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B100000000000000000000B10 /* TelegramViewer */,
+			);
+			name = TelegramViewer;
+			packageProductDependencies = (
+				B100000000000000000000F7 /* TelegramKit */,
+			);
+			productName = "Telegram Viewer";
+			productReference = B100000000000000000000B11 /* Telegram Viewer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -99,6 +142,9 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					B100000000000000000000B5 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					B100000000000000000000B12 = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
@@ -118,6 +164,7 @@
 				B100000000000000000000D3 /* XCLocalSwiftPackageReference "Packages/ContentImportKit" */,
 				B100000000000000000000D4 /* XCLocalSwiftPackageReference "Packages/AIKit" */,
 				B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */,
+				B100000000000000000000D6 /* XCLocalSwiftPackageReference "Packages/TelegramKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B100000000000000000000B3 /* Products */;
@@ -125,6 +172,7 @@
 			projectRoot = "";
 			targets = (
 				B100000000000000000000B5 /* MelingoMac */,
+				B100000000000000000000B12 /* TelegramViewer */,
 			);
 		};
 /* End PBXProject section */
@@ -137,10 +185,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B100000000000000000000B15 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B100000000000000000000B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B100000000000000000000B14 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -264,6 +326,51 @@
 			};
 			name = Release;
 		};
+		B100000000000000000000C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Telegram Viewer";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Apache 2.0";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.melingo.telegramviewer;
+				PRODUCT_NAME = "Telegram Viewer";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		B100000000000000000000C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Telegram Viewer";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Apache 2.0";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.melingo.telegramviewer;
+				PRODUCT_NAME = "Telegram Viewer";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -281,6 +388,15 @@
 			buildConfigurations = (
 				B100000000000000000000C5 /* Debug */,
 				B100000000000000000000C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B100000000000000000000C9 /* Build configuration list for PBXNativeTarget "TelegramViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B100000000000000000000C7 /* Debug */,
+				B100000000000000000000C8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -307,6 +423,10 @@
 		B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/MLXAdapter;
+		};
+		B100000000000000000000D6 /* XCLocalSwiftPackageReference "Packages/TelegramKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/TelegramKit;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -335,6 +455,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B100000000000000000000D5 /* XCLocalSwiftPackageReference "Packages/MLXAdapter" */;
 			productName = MLXAdapter;
+		};
+		B100000000000000000000F6 /* TelegramKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D6 /* XCLocalSwiftPackageReference "Packages/TelegramKit" */;
+			productName = TelegramKit;
+		};
+		B100000000000000000000F7 /* TelegramKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B100000000000000000000D6 /* XCLocalSwiftPackageReference "Packages/TelegramKit" */;
+			productName = TelegramKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

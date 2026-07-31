@@ -404,6 +404,8 @@ final class WordChipProseView: NSView {
     private var textColor: NSColor = .labelColor
     private var mutedColor: NSColor = .secondaryLabelColor
     private var selectionFill: NSColor = .quaternaryLabelColor
+    /// Optional inline images (Telegram custom emoji) keyed by token index.
+    private var imagesByIndex: [Int: NSImage] = [:]
     private var frames: [CGRect] = []
     private var hoveredIndex: Int?
     private var tracking: NSTrackingArea?
@@ -432,7 +434,8 @@ final class WordChipProseView: NSView {
         selectedIDs: Set<String>,
         textColor: NSColor,
         mutedColor: NSColor,
-        selectionFill: NSColor
+        selectionFill: NSColor,
+        imagesByIndex: [Int: NSImage] = [:]
     ) {
         self.tokens = tokens
         self.fontSize = fontSize
@@ -440,6 +443,7 @@ final class WordChipProseView: NSView {
         self.textColor = textColor
         self.mutedColor = mutedColor
         self.selectionFill = selectionFill
+        self.imagesByIndex = imagesByIndex
         refreshFrames()
         needsDisplay = true
         updateTracking()
@@ -468,8 +472,28 @@ final class WordChipProseView: NSView {
 
         for index in tokens.indices {
             let token = tokens[index]
+            if token.text == "\n" || token.text.isEmpty { continue }
             let frame = frames[index]
             guard frame.intersects(dirtyRect) else { continue }
+
+            if let image = imagesByIndex[index] {
+                let size = min(frame.width, frame.height)
+                let rect = CGRect(
+                    x: frame.midX - size / 2,
+                    y: frame.midY - size / 2,
+                    width: size,
+                    height: size
+                )
+                image.draw(
+                    in: rect,
+                    from: .zero,
+                    operation: .sourceOver,
+                    fraction: 1,
+                    respectFlipped: true,
+                    hints: [.interpolation: NSImageInterpolation.high]
+                )
+                continue
+            }
 
             let selected = token.isWord && selectedIDs.contains(token.id)
             let hovered = token.isWord && hoveredIndex == index
@@ -571,22 +595,46 @@ final class WordChipProseView: NSView {
         let maxWidth = max(width, 1)
         let font = NSFont.systemFont(ofSize: fontSize)
         let attrs: [NSAttributedString.Key: Any] = [.font: font]
-        let lineSpacing = max(6, fontSize * 0.35)
+        let baseLineHeight = ceil(font.ascender - font.descender + max(0, font.leading))
+        let lineSpacing = max(4, fontSize * 0.28)
 
         var result: [CGRect] = []
         result.reserveCapacity(tokens.count)
         var x: CGFloat = 0
         var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
+        var rowHeight: CGFloat = baseLineHeight
 
-        for token in tokens {
-            let size = (token.text as NSString).size(withAttributes: attrs)
-            let w = ceil(size.width)
-            let h = ceil(max(size.height, fontSize * 1.2))
+        for (tokenIndex, token) in tokens.enumerated() {
+            if token.text == "\n" {
+                result.append(CGRect(x: x, y: y, width: 0, height: rowHeight))
+                x = 0
+                y += rowHeight + lineSpacing
+                rowHeight = baseLineHeight
+                continue
+            }
+
+            let w: CGFloat
+            let h: CGFloat
+            if imagesByIndex[tokenIndex] != nil {
+                // Telegram-Mac inline custom emoji ≈ text line (~20pt at 15pt body).
+                let emoji = max(18, ceil(fontSize * 1.35))
+                w = emoji
+                h = emoji
+            } else {
+                let bounds = (token.text as NSString).boundingRect(
+                    with: NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading],
+                    attributes: attrs
+                )
+                w = min(maxWidth, ceil(bounds.width))
+                // Cap emoji/line height so a star doesn’t spill into the time row.
+                h = min(ceil(max(bounds.height, baseLineHeight)), fontSize * 1.55)
+            }
+
             if x > 0, x + w > maxWidth {
                 x = 0
                 y += rowHeight + lineSpacing
-                rowHeight = 0
+                rowHeight = baseLineHeight
             }
             result.append(CGRect(x: x, y: y, width: w, height: h))
             rowHeight = max(rowHeight, h)

@@ -274,6 +274,8 @@ struct StudyHubView: View {
             CollocationsModeView()
         case .production:
             ProductionModeView()
+        case .dictation:
+            DictationModeView()
         case .challenge:
             ChallengeModeView()
         case .recognizeText:
@@ -304,7 +306,7 @@ struct StudyHubView: View {
         switch mode {
         case .review:
             return nil
-        case .context, .collocations, .production, .challenge, .miniDialogue:
+        case .context, .collocations, .production, .dictation, .challenge, .miniDialogue:
             return store.vocabulary.isEmpty ? AppL10n.t("study.needCards") : nil
         case .recognizeText:
             return nil

@@ -214,6 +214,9 @@ public protocol MLXInferenceEngining: Sendable {
 }
 
 /// Downloads an MLX Hugging Face repo into `~/Documents/Melingo/Models` (user-initiated only).
+///
+/// Already-complete folders under Models/ are adopted without re-downloading so Melingo
+/// (and other tools pointing at the same path) can reuse weights.
 public enum MLXModelDownloader {
     public struct Progress: Sendable {
         public var fraction: Double
@@ -225,56 +228,220 @@ public enum MLXModelDownloader {
         }
     }
 
+    public static let defaultFileNames: [String] = [
+        "config.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "model.safetensors",
+        "weights.safetensors",
+        "model.safetensors.index.json",
+    ]
+
+    public static func folderName(for modelID: String) -> String {
+        modelID.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "/", with: "__")
+    }
+
+    /// True when `config.json` exists and weights are present (single file or all index shards).
+    public static func isCompleteModelDirectory(_ url: URL) -> Bool {
+        let fm = FileManager.default
+        let config = url.appendingPathComponent("config.json")
+        guard nonEmptyFileExists(config, fm: fm) else { return false }
+
+        if nonEmptyFileExists(url.appendingPathComponent("model.safetensors"), fm: fm)
+            || nonEmptyFileExists(url.appendingPathComponent("weights.safetensors"), fm: fm)
+        {
+            return true
+        }
+
+        let indexURL = url.appendingPathComponent("model.safetensors.index.json")
+        guard nonEmptyFileExists(indexURL, fm: fm) else { return false }
+        let shards = shardFileNames(inIndexAt: indexURL)
+        guard !shards.isEmpty else { return false }
+        return shards.allSatisfy { nonEmptyFileExists(url.appendingPathComponent($0), fm: fm) }
+    }
+
+    /// Registers config for an already-complete local folder. Returns folder name, or nil.
+    @discardableResult
+    public static func adoptIfPresent(
+        modelID: String,
+        modelsRoot: URL? = nil
+    ) -> String? {
+        let trimmed = modelID.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let root = modelsRoot ?? MLXProvider.modelsDirectory()
+        let name = folderName(for: trimmed)
+        let dest = root.appendingPathComponent(name, isDirectory: true)
+        guard isCompleteModelDirectory(dest) else { return nil }
+        MLXConfigStorage.save(
+            MLXConfigStorage.Config(modelID: trimmed, localRelativePath: name)
+        )
+        return name
+    }
+
+    /// Picks the sole complete model folder under `modelsRoot` and adopts it.
+    /// If `preferredModelID` matches a complete folder, that wins. Returns adopted model ID.
+    @discardableResult
+    public static func adoptExistingIfUnconfigured(
+        preferredModelID: String? = nil,
+        modelsRoot: URL? = nil
+    ) -> String? {
+        let existing = MLXConfigStorage.load()
+        if existing.isConfigured,
+           let relative = existing.localRelativePath
+        {
+            let root = modelsRoot ?? MLXProvider.modelsDirectory()
+            let dest = root.appendingPathComponent(relative, isDirectory: true)
+            if isCompleteModelDirectory(dest) { return existing.modelID }
+        }
+
+        let root = modelsRoot ?? MLXProvider.modelsDirectory()
+        if let preferred = preferredModelID?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !preferred.isEmpty,
+           adoptIfPresent(modelID: preferred, modelsRoot: root) != nil
+        {
+            return preferred
+        }
+
+        let fm = FileManager.default
+        guard let kids = try? fm.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return nil }
+
+        let complete = kids.filter { url in
+            var isDir: ObjCBool = false
+            return fm.fileExists(atPath: url.path, isDirectory: &isDir)
+                && isDir.boolValue
+                && isCompleteModelDirectory(url)
+        }
+        guard complete.count == 1, let only = complete.first else { return nil }
+        let folder = only.lastPathComponent
+        let modelID = folder.replacingOccurrences(of: "__", with: "/")
+        MLXConfigStorage.save(
+            MLXConfigStorage.Config(modelID: modelID, localRelativePath: folder)
+        )
+        return modelID
+    }
+
     public static func download(
         modelID: String,
-        fileNames: [String] = [
-            "config.json",
-            "tokenizer.json",
-            "tokenizer_config.json",
-            "model.safetensors",
-            "weights.safetensors",
-            "model.safetensors.index.json",
-        ],
+        fileNames: [String] = defaultFileNames,
+        modelsRoot: URL? = nil,
         onProgress: @Sendable (Progress) -> Void = { _ in }
     ) async throws -> String {
         let trimmed = modelID.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { throw LanguageModelError.malformedResponse }
-        let root = MLXProvider.modelsDirectory()
-        let folderName = trimmed.replacingOccurrences(of: "/", with: "__")
-        let dest = root.appendingPathComponent(folderName, isDirectory: true)
+        let root = modelsRoot ?? MLXProvider.modelsDirectory()
+        let name = folderName(for: trimmed)
+        let dest = root.appendingPathComponent(name, isDirectory: true)
+
+        if let adopted = adoptIfPresent(modelID: trimmed, modelsRoot: root) {
+            onProgress(Progress(fraction: 1, detail: "Already on disk"))
+            return adopted
+        }
+
         try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true)
 
-        let total = Double(max(fileNames.count, 1))
-        var savedAny = false
-        for (index, name) in fileNames.enumerated() {
-            onProgress(Progress(fraction: Double(index) / total, detail: name))
-            let encoded = trimmed.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? trimmed
-            let urlString = "https://huggingface.co/\(encoded)/resolve/main/\(name)"
-            guard let url = URL(string: urlString) else { continue }
-            do {
-                let (temp, response) = try await URLSession.shared.download(from: url)
-                if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-                    continue
-                }
-                let target = dest.appendingPathComponent(name)
-                if FileManager.default.fileExists(atPath: target.path) {
-                    try FileManager.default.removeItem(at: target)
-                }
-                try FileManager.default.moveItem(at: temp, to: target)
-                savedAny = true
-            } catch {
-                continue
+        var pending = fileNames
+        let indexPath = dest.appendingPathComponent("model.safetensors.index.json")
+        if nonEmptyFileExists(indexPath) {
+            for shard in shardFileNames(inIndexAt: indexPath) where !pending.contains(shard) {
+                pending.append(shard)
             }
         }
-        let configPath = dest.appendingPathComponent("config.json")
-        guard savedAny, FileManager.default.fileExists(atPath: configPath.path) else {
+
+        let total = Double(max(pending.count, 1))
+        for (index, fileName) in pending.enumerated() {
+            let target = dest.appendingPathComponent(fileName)
+            if nonEmptyFileExists(target) {
+                onProgress(Progress(fraction: Double(index + 1) / total, detail: "Skip \(fileName)"))
+                continue
+            }
+            onProgress(Progress(fraction: Double(index) / total, detail: fileName))
+            if try await fetchHuggingFaceFile(modelID: trimmed, fileName: fileName, to: target) {
+                // After index lands, queue any missing shards for this same pass.
+                if fileName == "model.safetensors.index.json" {
+                    let shards = shardFileNames(inIndexAt: target)
+                    for shard in shards where !pending.contains(shard) {
+                        pending.append(shard)
+                    }
+                }
+            }
+        }
+
+        // Second pass for shards discovered after index download (total may have grown).
+        let lateShards = shardFileNames(inIndexAt: dest.appendingPathComponent("model.safetensors.index.json"))
+            .filter { !nonEmptyFileExists(dest.appendingPathComponent($0)) }
+        if !lateShards.isEmpty {
+            let lateTotal = Double(lateShards.count)
+            for (index, shard) in lateShards.enumerated() {
+                onProgress(Progress(fraction: Double(index) / lateTotal, detail: shard))
+                let target = dest.appendingPathComponent(shard)
+                _ = try await fetchHuggingFaceFile(modelID: trimmed, fileName: shard, to: target)
+            }
+        }
+
+        guard isCompleteModelDirectory(dest) else {
             throw LanguageModelError.underlying(
-                "Download incomplete — could not fetch config.json for \(trimmed).")
+                "Download incomplete — could not fetch a complete model for \(trimmed).")
         }
         onProgress(Progress(fraction: 1, detail: "Done"))
         MLXConfigStorage.save(
-            MLXConfigStorage.Config(modelID: trimmed, localRelativePath: folderName)
+            MLXConfigStorage.Config(modelID: trimmed, localRelativePath: name)
         )
-        return folderName
+        return name
+    }
+
+    // MARK: - Internals
+
+    private static func nonEmptyFileExists(_ url: URL, fm: FileManager = .default) -> Bool {
+        guard fm.fileExists(atPath: url.path) else { return false }
+        guard let attrs = try? fm.attributesOfItem(atPath: url.path),
+              let size = attrs[.size] as? NSNumber
+        else { return false }
+        return size.intValue > 0
+    }
+
+    /// Unique shard filenames from a Hugging Face safetensors index `weight_map`.
+    public static func shardFileNames(inIndexAt url: URL) -> [String] {
+        guard let data = try? Data(contentsOf: url),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return [] }
+        let map = (json["weight_map"] as? [String: String]) ?? [:]
+        var seen = Set<String>()
+        var ordered: [String] = []
+        for name in map.values {
+            if seen.insert(name).inserted {
+                ordered.append(name)
+            }
+        }
+        return ordered
+    }
+
+    private static func fetchHuggingFaceFile(
+        modelID: String,
+        fileName: String,
+        to target: URL
+    ) async throws -> Bool {
+        let encoded = modelID.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? modelID
+        let urlString = "https://huggingface.co/\(encoded)/resolve/main/\(fileName)"
+        guard let url = URL(string: urlString) else { return false }
+        do {
+            let (temp, response) = try await URLSession.shared.download(from: url)
+            if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+                try? FileManager.default.removeItem(at: temp)
+                return false
+            }
+            let fm = FileManager.default
+            if fm.fileExists(atPath: target.path) {
+                try fm.removeItem(at: target)
+            }
+            try fm.moveItem(at: temp, to: target)
+            return nonEmptyFileExists(target, fm: fm)
+        } catch {
+            return false
+        }
     }
 }

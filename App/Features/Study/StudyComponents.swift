@@ -458,6 +458,7 @@ extension StudyDestination {
         case .context: Color(nsColor: .systemBlue)
         case .collocations: Color(nsColor: .systemTeal)
         case .production: Color(nsColor: .systemPurple)
+        case .dictation: Color(nsColor: .systemBrown)
         case .challenge: Color(nsColor: .systemOrange)
         case .recognizeText: Color(nsColor: .systemIndigo)
         case .miniDialogue: Color(nsColor: .systemMint)

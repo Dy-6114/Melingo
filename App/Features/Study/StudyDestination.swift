@@ -6,6 +6,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
     case context
     case collocations
     case production
+    case dictation
     case challenge
     case recognizeText
     case miniDialogue
@@ -20,6 +21,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
         case .context: "Context"
         case .collocations: "Collocations"
         case .production: "Produce"
+        case .dictation: "Dictation"
         case .challenge: "Challenge"
         case .recognizeText: "Recognize text"
         case .miniDialogue: "Mini-dialogue"
@@ -37,6 +39,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
             case .context: return "Контекст"
             case .collocations: return "Коллокации"
             case .production: return "Продукция"
+            case .dictation: return "Диктант"
             case .challenge: return "Челлендж"
             case .recognizeText: return "Распознать текст"
             case .miniDialogue: return "Мини-диалог"
@@ -49,6 +52,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
             case .context: return "语境"
             case .collocations: return "搭配"
             case .production: return "产出"
+            case .dictation: return "听写"
             case .challenge: return "挑战"
             case .recognizeText: return "识别文字"
             case .miniDialogue: return "迷你对话"
@@ -61,6 +65,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
             case .context: return "文脈"
             case .collocations: return "コロケーション"
             case .production: return "産出"
+            case .dictation: return "ディクテーション"
             case .challenge: return "チャレンジ"
             case .recognizeText: return "テキスト認識"
             case .miniDialogue: return "ミニ対話"
@@ -73,6 +78,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
             case .context: return "문맥"
             case .collocations: return "연어"
             case .production: return "산출"
+            case .dictation: return "받아쓰기"
             case .challenge: return "챌린지"
             case .recognizeText: return "텍스트 인식"
             case .miniDialogue: return "미니 대화"
@@ -90,6 +96,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
         case .context: AppL10n.t("study.mode.context.sub")
         case .collocations: AppL10n.t("study.mode.collocations.sub")
         case .production: AppL10n.t("study.mode.production.sub")
+        case .dictation: AppL10n.t("study.mode.dictation.sub")
         case .challenge: AppL10n.t("study.mode.challenge.sub")
         case .recognizeText: AppL10n.t("study.mode.recognizeText.sub")
         case .miniDialogue: AppL10n.t("study.mode.miniDialogue.sub")
@@ -104,6 +111,7 @@ enum StudyDestination: String, CaseIterable, Identifiable, Hashable {
         case .context: "arrow.uturn.backward"
         case .collocations: "link"
         case .production: "pencil.line"
+        case .dictation: "text.cursor"
         case .challenge: "bolt.fill"
         case .recognizeText: "viewfinder"
         case .miniDialogue: "bubble.left.and.bubble.right.fill"

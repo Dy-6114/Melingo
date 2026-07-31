@@ -108,11 +108,7 @@ final class ReadingModeController {
             guard let self else { return }
             let pair = languagePairProvider?() ?? LanguagePair(source: "en", target: "ru")
             do {
-                let gloss = try await translator.translate(
-                    normalized,
-                    from: pair.source,
-                    to: pair.target
-                )
+                let gloss = try await translator.translateFlexible(normalized, pair: pair)
                 guard !Task.isCancelled, self.lastSource == normalized else { return }
                 self.hud.updateContent(source: normalized, translation: gloss, translating: false)
             } catch {

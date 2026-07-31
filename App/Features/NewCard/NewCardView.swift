@@ -142,15 +142,13 @@ struct NewCardView: View {
         isTranslating = true
         defer { isTranslating = false }
         let pair = store.profile.preferredLanguagePair
-        if let gloss = try? await translator.translate(trimmed, from: pair.source, to: pair.target),
-           !gloss.isEmpty,
-           gloss.localizedCaseInsensitiveCompare(trimmed) != .orderedSame {
-            meaning = gloss
-        } else if let study = try? await translator.translate(trimmed, from: pair.target, to: pair.source),
-                  !study.isEmpty,
-                  study.localizedCaseInsensitiveCompare(trimmed) != .orderedSame {
-            meaning = trimmed
-            word = study
+        if let resolved = await translator.resolveStudyLookup(trimmed, pair: pair) {
+            if resolved.inputWasNative {
+                meaning = resolved.cardMeaning
+                word = resolved.cardWord
+            } else {
+                meaning = resolved.gloss
+            }
         }
     }
 
@@ -328,24 +326,15 @@ struct NewCardView: View {
         let pair = store.profile.preferredLanguagePair
         translationNote = nil
 
-        // Path A — classic: Слово = L2 → Значение = L1 gloss
-        if let gloss = try? await translator.translate(term, from: pair.source, to: pair.target),
-           !gloss.isEmpty,
-           !Self.sameIgnoringCase(gloss, term) {
-            meaning = gloss
-            return
-        }
-
-        // Path B — native typed in Слово: L1 → L2, then swap into card sides
-        // (e.g. «Чёрт» → word=diable / diable…, meaning=Чёрт)
-        if let study = try? await translator.translate(term, from: pair.target, to: pair.source),
-           !study.isEmpty,
-           !Self.sameIgnoringCase(study, term) {
-            meaning = term
-            word = study
-            translationNote = AppL10n.t("newcard.translatedFromNative")
-            // Refresh wiki for the new L2 headword
-            Task { await lookUpWiktionary() }
+        if let resolved = await translator.resolveStudyLookup(term, pair: pair) {
+            if resolved.inputWasNative {
+                meaning = resolved.cardMeaning
+                word = resolved.cardWord
+                translationNote = AppL10n.t("newcard.translatedFromNative")
+                Task { await lookUpWiktionary() }
+            } else {
+                meaning = resolved.gloss
+            }
             return
         }
 
@@ -516,19 +505,15 @@ struct NewCardView: View {
         defer { isTranslating = false }
         let pair = store.profile.preferredLanguagePair
         // Prefer L2→L1; if that echoes, try treating input as L1.
-        if let gloss = try? await translator.translate(trimmed, from: pair.source, to: pair.target),
-           !gloss.isEmpty,
-           !Self.sameIgnoringCase(gloss, trimmed) {
-            meaning = gloss
-            translationNote = AppL10n.t("newcard.translatedNote")
-            return
-        }
-        if let study = try? await translator.translate(trimmed, from: pair.target, to: pair.source),
-           !study.isEmpty,
-           !Self.sameIgnoringCase(study, trimmed) {
-            meaning = trimmed
-            word = study
-            translationNote = AppL10n.t("newcard.translatedFromNative")
+        if let resolved = await translator.resolveStudyLookup(trimmed, pair: pair) {
+            if resolved.inputWasNative {
+                meaning = resolved.cardMeaning
+                word = resolved.cardWord
+                translationNote = AppL10n.t("newcard.translatedFromNative")
+            } else {
+                meaning = resolved.gloss
+                translationNote = AppL10n.t("newcard.translatedNote")
+            }
             return
         }
         translationNote = AppL10n.t("newcard.meaningManual")

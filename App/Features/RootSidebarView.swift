@@ -43,6 +43,13 @@ struct RootSidebarView: View {
         )
     }
 
+    private var splitVisibility: Binding<NavigationSplitViewVisibility> {
+        Binding(
+            get: { router.columnVisibility },
+            set: { router.columnVisibility = $0 }
+        )
+    }
+
     private var weakCount: Int {
         store.vocabulary.filter {
             $0.suspendedAt == nil
@@ -52,7 +59,7 @@ struct RootSidebarView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: splitVisibility) {
             List(selection: selectionBinding) {
                 Section {
                     Label {

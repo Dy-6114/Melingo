@@ -10,7 +10,7 @@ Local-first language learning for macOS — reading, cards, and FSRS review in o
 [![macOS](https://img.shields.io/badge/macOS-15%2B-000000?style=flat-square&logo=apple&logoColor=white)](https://github.com/timurverevkin/Melingo)
 [![Swift](https://img.shields.io/badge/Swift-6-F05138?style=flat-square&logo=swift&logoColor=white)](https://swift.org)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=flat-square)](LICENSE)
-[![Download](https://img.shields.io/badge/Download-DMG-brightgreen?style=flat-square)](https://github.com/timurverevkin/Melingo/releases/download/Release/Melingo-0.3.0.dmg)
+[![Download](https://img.shields.io/badge/Download-DMG-brightgreen?style=flat-square)](https://github.com/timurverevkin/Melingo/releases/download/Release/Melingo-0.3.1.dmg)
 
 </div>
 
@@ -21,6 +21,15 @@ Local-first language learning for macOS — reading, cards, and FSRS review in o
 Melingo is a native macOS app for people who learn by living inside text — articles, books, screenshots, stray sentences — and want those encounters to become memory without turning study into a second job.
 
 It is local-first. Your library, cards, and voice live on your Mac. The AI that helps you is on-device when it can be. Nothing here asks you to perform productivity.
+
+---
+
+### What’s new in 0.3.1
+
+- **Dictation** study mode — type the other side of the card; each item randomly asks for the study language or your native language, with a clear language chip.
+- **YouTube** in the library — open a video with timed subtitles, tap words, and save cards from captions.
+- **Telegram** channels — authorize once, export `@channel` posts + media, browse in a Telegram-styled reader (session sync via Firebase for another Mac).
+- Reader / library polish — sturdier word tapping, translation flows, and import paths for the new source kinds.
 
 ---
 
@@ -41,7 +50,7 @@ Import from the web, paste, PDF, EPUB, Markdown, plain text, Word, OCR. Read ori
 FSRS-powered review with recognition and production, hints, speak-after-reveal, and grades that don’t shout. Soft daily reminders in your language — fifteen calm lines, never “time to grind.”
 
 **Study that feels like practice, not homework**  
-Context, collocations, challenge, mini-dialogue, voice mix, OCR — modes that unlock as your deck grows, with honest rules instead of dark patterns.
+Context, collocations, dictation, challenge, mini-dialogue, voice mix, OCR — modes that unlock as your deck grows, with honest rules instead of dark patterns.
 
 **Intelligence that stays home**  
 Apple Intelligence / Foundation Models for light work. Local Gemma (MLX) when the Mac can carry it. Routing that prefers privacy and latency over a cloud login wall.
@@ -103,8 +112,11 @@ Opinionated layers, not a framework museum:
 | `Packages/DataKit` | Local persistence |
 | `Packages/AIKit` / `MLXAdapter` | On-device models and routing |
 | `Packages/ContentImportKit` | Bringing text into the library |
+| `Packages/TelegramKit` | TDLib channel export + Firebase session sync (`telegram-export` CLI) |
 
 UI strings follow the learner’s native language (`AppL10n`). Reminders are scheduled as calm local notifications — content from localization, not hard-coded urgency.
+
+Telegram channel export lives in the sidebar (**Telegram**) and Import → Telegram: authorize once, export `@channel` to JSON + media, browse in a Telegram-styled view. On another Mac: `swift run --package-path Packages/TelegramKit telegram-export pull-session` then `export --channel @name`. Details: [`Packages/TelegramKit/README.md`](Packages/TelegramKit/README.md).
 
 ---
 

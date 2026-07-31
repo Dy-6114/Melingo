@@ -1,11 +1,10 @@
 .build/
-Packages/Domain/.build/
-Packages/DataKit/.build/
-Packages/SharedTestSupport/.build/
-Packages/ContentImportKit/.build/
-Packages/AIKit/.build/
+Packages/*/.build/
+Packages/*/Package.resolved
 dist/
 DerivedData/
+DerivedData-*/
+Melingo.app/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 .DS_Store

@@ -599,6 +599,12 @@ struct SettingsView: View {
         if mlxModelID.isEmpty {
             mlxModelID = GemmaModelCatalog.recommended(for: hardware).huggingFaceID
         }
+        // Reuse weights already on disk under ~/Documents/Melingo/Models.
+        if let adopted = MLXModelDownloader.adoptExistingIfUnconfigured(
+            preferredModelID: mlxModelID
+        ) {
+            mlxModelID = adopted
+        }
         if let cfg = store.remoteSettings.defaultConfig {
             selectedRemoteProvider = cfg.apiProvider
         }
@@ -650,10 +656,18 @@ struct SettingsView: View {
         mlxDownloadProgress = MLXModelDownloader.Progress(fraction: 0, detail: "Starting…")
         defer { mlxDownloadProgress = nil }
         do {
+            let dest = MLXProvider.modelsDirectory()
+                .appendingPathComponent(
+                    MLXModelDownloader.folderName(for: mlxModelID),
+                    isDirectory: true
+                )
+            let alreadyOnDisk = MLXModelDownloader.isCompleteModelDirectory(dest)
             _ = try await MLXModelDownloader.download(modelID: mlxModelID) { progress in
                 Task { @MainActor in mlxDownloadProgress = progress }
             }
-            status = "MLX model downloaded."
+            status = alreadyOnDisk
+                ? "MLX model already on disk — ready to use."
+                : "MLX model downloaded."
         } catch {
             status = error.localizedDescription
         }

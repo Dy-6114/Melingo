@@ -24,7 +24,11 @@ let package = Package(
         ),
         .testTarget(
             name: "MLXAdapterTests",
-            dependencies: ["MLXAdapter", .product(name: "Domain", package: "Domain")]
+            dependencies: [
+                "MLXAdapter",
+                .product(name: "Domain", package: "Domain"),
+                .product(name: "AIKit", package: "AIKit"),
+            ]
         ),
     ]
 )
