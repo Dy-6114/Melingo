@@ -116,8 +116,6 @@ Opinionated layers, not a framework museum:
 
 UI strings follow the learner’s native language (`AppL10n`). Reminders are scheduled as calm local notifications — content from localization, not hard-coded urgency.
 
-Telegram channel export lives in the sidebar (**Telegram**) and Import → Telegram: authorize once, export `@channel` to JSON + media, browse in a Telegram-styled view. On another Mac: `swift run --package-path Packages/TelegramKit telegram-export pull-session` then `export --channel @name`. Details: [`Packages/TelegramKit/README.md`](Packages/TelegramKit/README.md).
-
 ---
 
 ### Principles (non-negotiable)
