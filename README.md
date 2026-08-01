@@ -12,6 +12,9 @@ Local-first language learning for macOS — reading, cards, and FSRS review in o
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=flat-square)](LICENSE)
 [![Download](https://img.shields.io/badge/Download-DMG-brightgreen?style=flat-square)](https://github.com/timurverevkin/Melingo/releases/download/Release/Melingo-0.3.1.dmg)
 
+**As featured on**
+
+[![Awesome Swift macOS Apps](https://img.shields.io/github/stars/jaywcjlove/awesome-swift-macos-apps?style=flat-square&logo=github&label=awesome-swift-macos-apps&color=f0a500)](https://github.com/jaywcjlove/awesome-swift-macos-apps)
 </div>
 
 <p align="center">
