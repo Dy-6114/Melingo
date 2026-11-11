@@ -1,0 +1,13 @@
+{
+  "name": "Melingo Subtitles",
+  "identifier": "com.melingo.iina.subtitles",
+  "version": "0.1.0",
+  "description": "Selectable subtitles: click a word or drag across a phrase to pause the video and look it up in Melingo.",
+  "author": {
+    "name": "Dy-6114",
+    "url": "https://github.com/Dy-6114/Melingo"
+  },
+  "entry": "main.js",
+  "permissions": ["video-overlay", "network-request", "show-osd"],
+  "allowedDomains": ["127.0.0.1"]
+}

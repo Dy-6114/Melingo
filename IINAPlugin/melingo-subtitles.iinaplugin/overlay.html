@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    /* Set from IINA's subtitle settings by applyStyle() below. */
+    --sub-scale: 1;
+    --sub-size: 6.11vh;
+    --sub-bottom: 3.06%;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #stage {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: var(--sub-bottom);
+    text-align: center;
+  }
+  #cue {
+    display: inline-block;
+    max-width: 100%;
+    font: 600 max(12px, calc(var(--sub-size) * var(--sub-scale)))/1.34 -apple-system, "SF Pro Text", "Helvetica Neue",
+      "PingFang SC", "Hiragino Sans", "Apple SD Gothic Neo", sans-serif;
+    color: #fff;
+    -webkit-text-stroke: 0.05em rgba(0, 0, 0, 0.85);
+    paint-order: stroke fill;
+    text-shadow: 0 0 0.12em rgba(0, 0, 0, 0.9), 0 0.05em 0.18em rgba(0, 0, 0, 0.9);
+  }
+  .word {
+    border-radius: 0.18em;
+    padding: 0 0.05em;
+    margin: 0 -0.05em;
+  }
+  .word.selected {
+    background: rgba(255, 214, 10, 0.92);
+    color: #111;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+</style>
+</head>
+<body>
+<div id="stage"><div id="cue"></div></div>
+<script>
+(function () {
+  "use strict";
+
+  // This page only draws. It never receives mouse events: the plugin script
+  // (main.js) watches the player window's mouse input, uses the word boxes
+  // reported from here to work out what was selected, and tells this page
+  // which words to highlight.
+
+  var cue = document.getElementById("cue");
+  var words = [];      // { el, start, end } — offsets into fullText
+  var fullText = "";
+
+  var segmenter = (typeof Intl !== "undefined" && typeof Intl.Segmenter === "function")
+    ? new Intl.Segmenter(undefined, { granularity: "word" })
+    : null;
+
+  // Every message carries a number unique to this page load, so the plugin can
+  // drop a duplicate delivery without mistaking a reloaded page for a repeat.
+  var pageId = String(Date.now()) + "-" + String(Math.floor(Math.random() * 1000000));
+  var seq = 0;
+
+  function post(name, data) {
+    if (window.iina && typeof window.iina.postMessage === "function") {
+      var payload = data || {};
+      seq += 1;
+      payload.seq = pageId + ":" + seq;
+      window.iina.postMessage(name, payload);
+    }
+  }
+
+  // Splits a line into word and non-word tokens. Intl.Segmenter also handles
+  // languages written without spaces (Chinese, Japanese, Thai).
+  function tokenize(text) {
+    var tokens = [];
+    if (segmenter) {
+      var iterator = segmenter.segment(text)[Symbol.iterator]();
+      for (var step = iterator.next(); !step.done; step = iterator.next()) {
+        var part = step.value;
+        tokens.push({
+          text: part.segment,
+          start: part.index,
+          end: part.index + part.segment.length,
+          isWord: !!part.isWordLike,
+        });
+      }
+      return tokens;
+    }
+    var pattern = /(?:\p{N}+(?:[.,]\p{N}+)*(?!\p{L})|[\p{L}\p{N}]+)(?:['\u2019][\p{L}\p{N}]+)*/gu;
+    var cursor = 0;
+    var match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > cursor) {
+        tokens.push({ text: text.slice(cursor, match.index), start: cursor, end: match.index, isWord: false });
+      }
+      tokens.push({ text: match[0], start: match.index, end: match.index + match[0].length, isWord: true });
+      cursor = match.index + match[0].length;
+    }
+    if (cursor < text.length) {
+      tokens.push({ text: text.slice(cursor), start: cursor, end: text.length, isWord: false });
+    }
+    return tokens;
+  }
+
+  function appendPlain(text) {
+    var lines = text.split("\n");
+    for (var i = 0; i < lines.length; i += 1) {
+      if (i > 0) cue.appendChild(document.createElement("br"));
+      if (lines[i]) cue.appendChild(document.createTextNode(lines[i]));
+    }
+  }
+
+  function paint(from, to) {
+    for (var i = 0; i < words.length; i += 1) {
+      words[i].el.className = (i >= from && i <= to) ? "word selected" : "word";
+    }
+  }
+
+  function render(text) {
+    fullText = text || "";
+    words = [];
+    while (cue.firstChild) cue.removeChild(cue.firstChild);
+    if (!fullText) return;
+
+    var tokens = tokenize(fullText);
+    for (var i = 0; i < tokens.length; i += 1) {
+      var token = tokens[i];
+      if (!token.isWord) {
+        appendPlain(token.text);
+        continue;
+      }
+      var span = document.createElement("span");
+      span.className = "word";
+      span.textContent = token.text;
+      words.push({ el: span, start: token.start, end: token.end });
+      cue.appendChild(span);
+    }
+  }
+
+  // Mirrors mpv's subtitle layout, which measures on a screen 720 units high:
+  //   scale    "sub-scale"      1 = normal
+  //   fontSize "sub-font-size"  drawn slightly smaller here, because mpv's size
+  //                             is the full line height, not the letter height
+  //   marginY  "sub-margin-y"   gap between the line and the bottom edge
+  //   pos      "sub-pos"        100 = at the bottom margin; each point below 100
+  //                             moves the line up by 1% of the height
+  var style = { scale: 1, pos: 100, fontSize: 55, marginY: 22 };
+
+  function applyStyle(data) {
+    var keys = ["scale", "pos", "fontSize", "marginY"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var value = data[keys[i]];
+      if (typeof value === "number" && isFinite(value)) style[keys[i]] = value;
+    }
+    var root = document.documentElement;
+    var scale = Math.min(Math.max(style.scale, 0.3), 4);
+    var size = Math.min(Math.max(style.fontSize, 8), 200) / 720 * 100 * 0.8;
+    var bottom = Math.max(style.marginY, 0) / 720 * 100 + (100 - style.pos);
+    bottom = Math.min(Math.max(bottom, 0), 90);
+    root.style.setProperty("--sub-scale", String(scale));
+    root.style.setProperty("--sub-size", size.toFixed(2) + "vh");
+    root.style.setProperty("--sub-bottom", bottom.toFixed(2) + "%");
+  }
+
+  // Tells the plugin where each word is drawn, in page pixels from the top-left.
+  function postLayout() {
+    var boxes = [];
+    for (var i = 0; i < words.length; i += 1) {
+      var rect = words[i].el.getBoundingClientRect();
+      boxes.push({
+        start: words[i].start,
+        end: words[i].end,
+        x: Math.round(rect.left * 10) / 10,
+        y: Math.round(rect.top * 10) / 10,
+        w: Math.round(rect.width * 10) / 10,
+        h: Math.round(rect.height * 10) / 10,
+      });
+    }
+    post("layout", { text: fullText, width: window.innerWidth, height: window.innerHeight, words: boxes });
+  }
+
+  function connect() {
+    if (!window.iina || typeof window.iina.onMessage !== "function") {
+      setTimeout(connect, 50);
+      return;
+    }
+    window.iina.onMessage("subtitle", function (data) {
+      var text = (data && typeof data.text === "string") ? data.text : "";
+      if (data) applyStyle(data);
+      if (text !== fullText) render(text);
+      postLayout(); // size or position may have changed even when the text did not
+    });
+    window.iina.onMessage("select", function (data) {
+      if (data && typeof data.from === "number" && typeof data.to === "number") paint(data.from, data.to);
+    });
+    window.iina.onMessage("clear-selection", function () { paint(-1, -1); });
+    window.iina.onMessage("hello", function () { post("ready"); });
+    window.addEventListener("resize", postLayout);
+    post("ready");
+  }
+
+  // Exposed for the automated tests; unused by IINA.
+  window.__melingoOverlay = { tokenize: tokenize, render: render };
+
+  connect();
+})();
+</script>
+</body>
+</html>

@@ -119,6 +119,7 @@ struct MelingoMacApp: App {
             await store.load()
             self.store = store
             MelingoServicesProvider.shared.store = store
+            IINABridgeController.shared.store = store
             AppL10n.sync(from: store.profile)
             ReadingModeController.shared.languagePairProvider = { [weak store] in
                 store?.profile.preferredLanguagePair ?? .init(source: "en", target: "en")
@@ -140,6 +141,7 @@ final class MelingoAppDelegate: NSObject, NSApplicationDelegate {
         MenuBarAgent.shared.install()
         ReadingModeController.shared.bootstrap()
         MelingoServicesProvider.shared.register()
+        IINABridgeController.shared.bootstrap()
         windowCloseObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
             object: nil,

@@ -10,6 +10,8 @@ struct WordLookupPopover: View {
     let segment: TextSegment
     let documentTitle: String?
     var canSpeak: Bool = true
+    /// Set when the content language is known per lookup (IINA subtitles); defaults to the profile pair.
+    var languagePairOverride: LanguagePair? = nil
 
     @State private var translation: String?
     /// Study-language form used for cards / dictionary (may differ from `word` when the click was native text).
@@ -31,6 +33,10 @@ struct WordLookupPopover: View {
     @State private var isSaving = false
     @State private var speech = SpeechService()
     private let translator = TranslationService()
+
+    private var activePair: LanguagePair {
+        languagePairOverride ?? store.profile.preferredLanguagePair
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -64,7 +70,7 @@ struct WordLookupPopover: View {
                     speech.speak(
                         word,
                         reading: transcription,
-                        language: speakLanguage ?? store.profile.preferredLanguagePair.source
+                        language: speakLanguage ?? activePair.source
                     )
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
@@ -226,7 +232,7 @@ struct WordLookupPopover: View {
                 speech.speak(
                     text,
                     reading: nil,
-                    language: store.profile.preferredLanguagePair.source
+                    language: activePair.source
                 )
             } label: {
                 Image(systemName: "play.circle.fill")
@@ -300,7 +306,7 @@ struct WordLookupPopover: View {
         showExample = false
         commonsThumb = nil
 
-        let pair = store.profile.preferredLanguagePair
+        let pair = activePair
         isAdded = store.vocabulary.contains {
             $0.word.localizedCaseInsensitiveCompare(word) == .orderedSame
         }
@@ -408,7 +414,7 @@ struct WordLookupPopover: View {
               let exampleSource,
               !exampleSource.isEmpty
         else { return }
-        let pair = store.profile.preferredLanguagePair
+        let pair = activePair
         do {
             exampleTranslation = try await translator.translateFlexible(exampleSource, pair: pair)
         } catch {
