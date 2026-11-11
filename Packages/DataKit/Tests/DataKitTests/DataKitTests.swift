@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import Testing
 @testable import DataKit
 import Domain
@@ -50,6 +51,42 @@ struct DocumentFileStoreTests {
 
 @Suite("LibrarySwiftDataRepository")
 struct LibraryRepositoryTests {
+    @Test("retired channel imports remain readable as plain text")
+    @MainActor
+    func retiredChannelImport() async throws {
+        let stack = try DataKitStack.makeInMemory()
+        let context = ModelContext(stack.store.container)
+        let id = UUID()
+        let model = DocumentModel(
+            id: id,
+            title: "Imported channel",
+            sourceKindRaw: "telegram",
+            sourceURL: "@saved-channel",
+            storedFileRelativePath: nil,
+            createdAt: .now,
+            updatedAt: .now
+        )
+        let segment = TextSegment(
+            documentID: id, order: 0, text: "A saved post.",
+            translation: "一篇已保存的帖子。", isNewParagraph: true
+        )
+        model.segments = [TextSegmentMapper.makeModel(from: segment, document: model)]
+        context.insert(model)
+        try context.save()
+
+        let document = try #require(try await stack.library.fetchDocuments().first)
+        #expect(document.id == id)
+        #expect(document.title == "Imported channel")
+        #expect(document.sourceKind == .plainText)
+        let segments = try await stack.library.fetchSegments(for: id)
+        #expect(segments.map(\.text) == [segment.text])
+        #expect(segments.first?.translation == segment.translation)
+
+        try await stack.library.save(document: document, segments: segments)
+        #expect(try await stack.library.fetchDocuments().first?.sourceKind == .plainText)
+        #expect(try await stack.library.fetchSegments(for: id).first?.text == segment.text)
+    }
+
     @Test("save fetch and delete documents with segments")
     func roundTrip() async throws {
         let stack = try DataKitStack.makeInMemory()

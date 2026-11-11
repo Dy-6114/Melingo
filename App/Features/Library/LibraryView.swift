@@ -1,7 +1,6 @@
 import AppKit
 import SwiftUI
 import Domain
-import TelegramKit
 import UniformTypeIdentifiers
 
 // MARK: - Your Articles
@@ -72,8 +71,6 @@ struct LibraryView: View {
                     if document.sourceKind == .epub,
                        let url = store.absoluteDocumentFileURL(for: document) {
                         EpubBookReaderView(document: document, bookURL: url)
-                    } else if document.sourceKind == .telegram {
-                        TelegramChannelReaderView(document: document)
                     } else if document.sourceKind == .youtube {
                         YouTubeReaderView(document: document)
                     } else {
@@ -371,13 +368,6 @@ private struct ArticleCard: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(minHeight: 40, alignment: .top)
 
-                    if document.sourceKind == .telegram, let handle = document.sourceURL {
-                        Text(handle)
-                            .font(.caption2)
-                            .foregroundStyle(theme.mutedForeground)
-                            .lineLimit(1)
-                    }
-
                     HStack(spacing: 6) {
                         statusChips
                         Spacer(minLength: 0)
@@ -451,16 +441,6 @@ private struct ArticleCard: View {
         if let disk = DocumentCoverCache.loadFromDisk(documentID: document.id) {
             remoteImage = disk
             DocumentCoverCache.store(disk, for: document.id)
-            return
-        }
-        // Telegram: use channel avatar from the local export folder.
-        if document.sourceKind == .telegram,
-           let png = TelegramChannelLibraryImport.avatarPNG(
-               fromExportOf: document
-           ),
-           let image = NSImage(data: png) {
-            remoteImage = image
-            DocumentCoverCache.persist(image, documentID: document.id)
             return
         }
         if let source = document.sourceURL,
@@ -538,11 +518,6 @@ private struct DocumentRow: View {
                     .font(.body.weight(.medium))
                     .foregroundStyle(theme.foreground)
                     .lineLimit(2)
-                if document.sourceKind == .telegram, let handle = document.sourceURL {
-                    Text(handle)
-                        .font(.caption)
-                        .foregroundStyle(theme.mutedForeground)
-                }
                 HStack(spacing: 8) {
                     Text(document.sourceKind.displayLabel)
                     Text("·")
@@ -631,14 +606,6 @@ private struct DocumentThumbnail: View {
         if let disk = DocumentCoverCache.loadFromDisk(documentID: document.id) {
             remoteImage = disk
             DocumentCoverCache.store(disk, for: document.id)
-            return
-        }
-
-        if document.sourceKind == .telegram,
-           let png = TelegramChannelLibraryImport.avatarPNG(fromExportOf: document),
-           let image = NSImage(data: png) {
-            remoteImage = image
-            DocumentCoverCache.persist(image, documentID: document.id)
             return
         }
 
@@ -816,7 +783,7 @@ enum ImportSourceKind {
 }
 
 private enum ImportTab: String, CaseIterable, Identifiable {
-    case url, video, telegram, pdf, epub, txt, word, markdown, image, paste
+    case url, video, pdf, epub, txt, word, markdown, image, paste
 
     var id: String { rawValue }
 
@@ -824,7 +791,6 @@ private enum ImportTab: String, CaseIterable, Identifiable {
         switch self {
         case .url: AppL10n.t("import.tab.url")
         case .video: AppL10n.t("import.tab.video")
-        case .telegram: AppL10n.t("import.tab.telegram")
         case .pdf: "PDF"
         case .epub: "EPUB"
         case .txt: "TXT"
@@ -839,7 +805,6 @@ private enum ImportTab: String, CaseIterable, Identifiable {
         switch self {
         case .url: "link"
         case .video: "play.rectangle.fill"
-        case .telegram: "paperplane.fill"
         case .pdf: "doc.richtext"
         case .epub: "book"
         case .txt: "doc.plaintext"
@@ -864,7 +829,7 @@ private enum ImportTab: String, CaseIterable, Identifiable {
                 UTType(filenameExtension: "markdown"),
             ].compactMap { $0 }
         case .image: return [.image]
-        case .url, .paste, .telegram, .video: return []
+        case .url, .paste, .video: return []
         }
     }
 }
@@ -882,16 +847,12 @@ struct ImportSheet: View {
     @State private var pastedText = ""
     @State private var title = ""
     @State private var urlString = ""
-    @State private var telegramUsername = ""
     @State private var videoURLString = ""
     @State private var isBusy = false
     @State private var startReading = true
     @State private var pickedFileURL: URL?
     @State private var importError: String?
     @State private var statusNote: String?
-    @Bindable private var telegramController = TelegramSession.shared
-    @State private var showTelegramSetup = false
-    @AppStorage(TelegramChannelLibraryImport.pendingUsernameKey) private var pendingTelegramUsername = ""
 
     init(onImported: ((Document) -> Void)? = nil) {
         self.onImported = onImported
@@ -937,22 +898,14 @@ struct ImportSheet: View {
                             videoFields
                         case .paste:
                             pasteFields
-                        case .telegram:
-                            telegramFields
                         default:
                             fileFields
                         }
                     }
 
-                    if tab != .telegram {
-                        Toggle(AppL10n.t("import.startReading"), isOn: $startReading)
-                            .toggleStyle(.checkbox)
-                            .foregroundStyle(theme.foreground)
-                    } else {
-                        Toggle(AppL10n.t("import.startReading"), isOn: $startReading)
-                            .toggleStyle(.checkbox)
-                            .foregroundStyle(theme.foreground)
-                    }
+                    Toggle(AppL10n.t("import.startReading"), isOn: $startReading)
+                        .toggleStyle(.checkbox)
+                        .foregroundStyle(theme.foreground)
 
                     if let importError {
                         Label(importError, systemImage: "exclamationmark.triangle.fill")
@@ -1006,7 +959,6 @@ struct ImportSheet: View {
         switch tab {
         case .url: AppL10n.t("import.help.url")
         case .video: AppL10n.t("import.help.video")
-        case .telegram: AppL10n.t("import.help.telegram")
         case .paste: AppL10n.t("import.help.paste")
         case .pdf: AppL10n.t("import.help.pdf")
         case .epub: AppL10n.t("import.help.epub")
@@ -1077,48 +1029,6 @@ struct ImportSheet: View {
                     .onSubmit { Task { await runImport() } }
             )
             tipBox(AppL10n.t("import.youtube.tip"))
-        }
-    }
-
-    private var telegramFields: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            fieldLabel(AppL10n.t("import.telegram.username"))
-            themedField(
-                TextField(AppL10n.t("import.telegram.placeholder"), text: $telegramUsername)
-                    .onSubmit { Task { await runImport() } }
-            )
-            tipBox(AppL10n.t("import.telegram.tip"))
-            if telegramController.needsSetup {
-                Label(AppL10n.t("import.telegram.needSetup"), systemImage: "exclamationmark.triangle")
-                    .font(.callout)
-                    .foregroundStyle(theme.mutedForeground)
-            }
-            Button {
-                pendingTelegramUsername = telegramUsername
-                showTelegramSetup = true
-            } label: {
-                HStack(spacing: 6) {
-                    if telegramController.client.isReady {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                    }
-                    Text(
-                        telegramController.client.isReady
-                            ? AppL10n.t("import.telegram.setupReady")
-                            : AppL10n.t("import.telegram.openSetup")
-                    )
-                }
-            }
-            .buttonStyle(.link)
-        }
-        .sheet(isPresented: $showTelegramSetup) {
-            TelegramSetupSheet()
-                .environment(store)
-                .environment(\.theme, theme)
-        }
-        .task(id: tab) {
-            guard tab == .telegram else { return }
-            await telegramController.ensureConnected()
         }
     }
 
@@ -1223,8 +1133,6 @@ struct ImportSheet: View {
             return YouTubeURLParser.videoID(from: videoURLString) != nil
         case .paste:
             return !pastedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case .telegram:
-            return !ChannelExporter.normalizeUsername(telegramUsername).isEmpty
         default:
             return pickedFileURL != nil
         }
@@ -1243,7 +1151,6 @@ struct ImportSheet: View {
             case .url where YouTubeURLParser.isYouTubeURL(urlString): return AppL10n.t("import.youtube.fetching")
             case .video: return AppL10n.t("import.youtube.fetching")
             case .url: return "Fetching and extracting article…"
-            case .telegram: return AppL10n.t("import.telegram.exporting")
             default: return AppL10n.t("import.importing")
             }
         }()
@@ -1252,10 +1159,6 @@ struct ImportSheet: View {
             statusNote = nil
         }
 
-        if tab == .telegram {
-            await runTelegramImport()
-            return
-        }
         if tab == .video || (tab == .url && YouTubeURLParser.isYouTubeURL(urlString)) {
             await runYouTubeImport(urlString: tab == .video ? videoURLString : urlString)
             return
@@ -1274,7 +1177,7 @@ struct ImportSheet: View {
                 title: title.isEmpty ? nil : title,
                 body: pastedText
             )
-        case .telegram, .video:
+        case .video:
             return
         default:
             guard let url = pickedFileURL else { return }
@@ -1327,31 +1230,6 @@ struct ImportSheet: View {
         }
     }
 
-    private func runTelegramImport() async {
-        let name = ChannelExporter.normalizeUsername(telegramUsername)
-        guard !name.isEmpty else {
-            importError = AppL10n.t("import.telegram.error.emptyUsername")
-            return
-        }
-        do {
-            let document = try await TelegramChannelLibraryImport.importChannel(
-                username: name,
-                store: store,
-                controller: telegramController
-            )
-            dismiss()
-            if startReading {
-                onImported?(document)
-            }
-        } catch let error as TelegramKitError where error == .notAuthorized || error == .notConfigured {
-            pendingTelegramUsername = telegramUsername
-            importError = telegramController.friendly(error)
-            showTelegramSetup = true
-        } catch {
-            importError = telegramController.friendly(error)
-        }
-    }
-
     private func pickFile() {
         let panel = NSOpenPanel()
         panel.title = String(format: AppL10n.t("import.panel.title"), tab.title)
@@ -1378,7 +1256,6 @@ private extension DocumentSourceKind {
         case .epub: "EPUB"
         case .docx: "DOCX"
         case .imageOCR: "OCR"
-        case .telegram: "TG"
         case .youtube: "YT"
         }
     }
@@ -1391,7 +1268,6 @@ private extension DocumentSourceKind {
         case .epub: "book"
         case .docx: "doc.text"
         case .imageOCR: "text.viewfinder"
-        case .telegram: "paperplane.fill"
         case .youtube: "play.rectangle.fill"
         }
     }

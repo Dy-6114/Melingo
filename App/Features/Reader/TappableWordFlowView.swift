@@ -404,7 +404,7 @@ final class WordChipProseView: NSView {
     private var textColor: NSColor = .labelColor
     private var mutedColor: NSColor = .secondaryLabelColor
     private var selectionFill: NSColor = .quaternaryLabelColor
-    /// Optional inline images (Telegram custom emoji) keyed by token index.
+    /// Optional inline images keyed by token index.
     private var imagesByIndex: [Int: NSImage] = [:]
     private var frames: [CGRect] = []
     private var hoveredIndex: Int?
@@ -616,7 +616,7 @@ final class WordChipProseView: NSView {
             let w: CGFloat
             let h: CGFloat
             if imagesByIndex[tokenIndex] != nil {
-                // Telegram-Mac inline custom emoji ≈ text line (~20pt at 15pt body).
+                // Keep inline images near the text line height (~20pt at 15pt body).
                 let emoji = max(18, ceil(fontSize * 1.35))
                 w = emoji
                 h = emoji

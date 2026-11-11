@@ -303,24 +303,6 @@ final class AppLibraryStore {
         }
     }
 
-    /// Persist a Telegram channel export as a library article (JSON/media stay under TelegramPaths).
-    /// Optional `coverPNG` becomes the Articles card thumbnail (channel avatar).
-    func saveTelegramChannel(
-        document: Document,
-        segments: [TextSegment],
-        coverPNG: Data? = nil
-    ) async throws {
-        if let coverPNG, !coverPNG.isEmpty {
-            _ = try? stack.store.fileStore.storePagePreviews(
-                [(pageIndex: 0, pngData: coverPNG)],
-                documentID: document.id
-            )
-        }
-        try await stack.library.save(document: document, segments: segments)
-        await load()
-        lastError = nil
-    }
-
     /// Persist YouTube video metadata (cues JSON) + transcript segments.
     func saveYouTubeVideo(
         document: inout Document,

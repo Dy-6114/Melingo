@@ -31,7 +31,6 @@ It is local-first. Your library, cards, and voice live on your Mac. The AI that 
 
 - **Dictation** study mode — type the other side of the card; each item randomly asks for the study language or your native language, with a clear language chip.
 - **YouTube** in the library — open a video with timed subtitles, tap words, and save cards from captions.
-- **Telegram** channels — authorize once, export `@channel` posts + media, browse in a Telegram-styled reader (session sync via Firebase for another Mac).
 - Reader / library polish — sturdier word tapping, translation flows, and import paths for the new source kinds.
 
 ---
@@ -115,7 +114,6 @@ Opinionated layers, not a framework museum:
 | `Packages/DataKit` | Local persistence |
 | `Packages/AIKit` / `MLXAdapter` | On-device models and routing |
 | `Packages/ContentImportKit` | Bringing text into the library |
-| `Packages/TelegramKit` | TDLib channel export + Firebase session sync (`telegram-export` CLI) |
 
 UI strings follow the learner’s native language (`AppL10n`). Reminders are scheduled as calm local notifications — content from localization, not hard-coded urgency.
 

@@ -8,7 +8,6 @@ public enum DocumentSourceKind: String, Codable, Sendable, CaseIterable {
     case epub
     case docx
     case imageOCR
-    case telegram
     case youtube
 }
 
